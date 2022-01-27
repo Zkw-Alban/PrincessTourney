@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="./stylesheets/chat.css">
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <table id="loginTable">
+        <tr>
+            <td id="login">
+                <form class="login" id="loginForm" action="#" onsubmit="hideLogin();return false">
+                    <input type="text" id="loginName" name="name" required minlength="3" maxlength="8" size="10"><button>Envoyer son nom</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <form class="chat hidden" id="chatForm" action="">
+        <input class="input hidden" id="chatInput" autocomplete="off" /><button id="sendButton" class="hidden">Send</button>
+    </form>
+
+    <script src="https://cdn.socket.io/4.4.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect("http://10.8.20.3:1337", { transports: ['websocket', 'polling', 'flashsocket'] });
+
+        var loginForm = document.getElementById('loginForm');
+        var login = document.getElementById('loginName');
+        var messages = document.getElementById('messages');
+        var form = document.getElementById('chatForm');
+        var input = document.getElementById('chatInput');
+
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault;
+            if (login.value) {
+                socket.emit('register', login.value);
+            }
+            return false;
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+            return false;
+        });
+
+        socket.on('chat message', function (msg) {
+            var item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        function hideLogin() {
+            $("#loginForm").addClass("hidden");
+            $("#logged").removeClass("hidden");
+            $("#chatForm").removeClass("hidden");
+            $("#chatForm").addClass("activeForm");
+            $("#chatInput").removeClass("hidden");
+            $("#sendButton").removeClass("hidden");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <link rel="stylesheet" href="./stylesheets/loveLetter.css">
+    <meta charset="utf-8">
+    <title>Love Letter</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="./javascripts/LoveLetterClient.js"></script>
+</head>
+
+<body>
+    <div class="playerGrid">
+        <table class="playerCards">
+            <tbody>
+                <tr>
+                    <td class="playertable" id="player0Card0"></td>
+                    <td class="playertable" id="player0Card1"></td>
+                </tr>
+                <tr>
+                    <td class="playerplay" id="playerPlayCard0"><input class="playButton" id="playButton0" type="button"
+                            value="Jouer" onclick="jouer(JOUEURPRINCIPAL,0)"></td>
+                    <td class="playerplay" id="playerPlayCard0"><input class="playButton" id="playButton1" type="button"
+                            value="Jouer" onclick="jouer(JOUEURPRINCIPAL,1)"></td>
+                </tr>
+                <tr>
+                    <td class="playerplay" id="playerPlaySelect0">
+                        <select id="playSelectJoueur0">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <select id="playSelectRole0">
+                            <option value="Espionne">Espionne</option>
+                            <option value="Pretre">Pretre</option>
+                            <option value="Baron">Baron</option>
+                            <option value="Servante">Servante</option>
+                            <option value="Prince">Prince</option>
+                            <option value="Chancelier">Chancelier</option>
+                            <option value="Roi">Roi</option>
+                            <option value="Comtesse">Comtesse</option>
+                            <option value="Princesse">Princesse</option>
+                        </select>
+                    </td>
+                    <td class="playerplay" id="playerPlaySelect1">
+                        <select id="playSelectJoueur1">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <select id="playSelectRole1">
+                            <option value="Espionne">Espionne</option>
+                            <option value="Pretre">Pretre</option>
+                            <option value="Baron">Baron</option>
+                            <option value="Servante">Servante</option>
+                            <option value="Prince">Prince</option>
+                            <option value="Chancelier">Chancelier</option>
+                            <option value="Roi">Roi</option>
+                            <option value="Comtesse">Comtesse</option>
+                            <option value="Princesse">Princesse</option>
+                        </select>
+                    </td>                    
+                </tr>
+                <tr>
+                    <td class="cardDesc" id="playerCardDesc0"></td>
+                    <td class="cardDesc" id="playerCardDesc1"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <img class="adv" id="adv1" src="./img/backCard.png" style="position: absolute; top: 10vh; left: 142vh; width: 100px">
+    <img class="adv" id="adv2" src="./img/backCard.png" style="position: absolute; top: 32vh; left: 142vh; width: 100px">
+    <img class="adv" id="adv3" src="./img/backCard.png" style="position: absolute; top: 54vh; left: 142vh; width: 100px">
+    <img class="adv" id="adv4" src="./img/backCard.png" style="position: absolute; top: 74vh; left: 142vh; width: 100px">
+    <img class="pioche" id="piocheimg" src="./img/pioche.png" onclick="pioche(JOUEURPRINCIPAL)">
+    <p class="pioche" id="piocheNbCard">20</p>
+    <input class="playButton" id="newGame" type="button" value="Nouvelle partie" onclick="newGame(5)"
+        style="position: absolute; top: 55vh; left: 105vh; width: 150px; cursor: pointer;">
+    <div class="deck">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="deckcontent">DeckContent</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="testLogin"><input type="text" id="loginName" name="name" required minlength="4" maxlength="8" size="10"><input class="playButton" id="sendLogin" type="button" value="Envoyer son nom" onclick="sendInfo()"></td>
+            </tr>
+            <tr>
+                <td class="decktable" id="testListUsers">TestListUsers</td>
+            </tr>
+        </table>
+    </div>
+    <div class="historiqueJ0">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="historiquetablej0">Vos cartes jouées:</td>
+            </tr>
+        </table>
+    </div>
+    <div class="historiqueJ1">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="player1Card0">Carte adv1 gauche:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="player1Card1">Carte adv1 droite:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="historiquetablej1">Adv1 cartes jouées:</td>
+            </tr>
+        </table>
+    </div>
+    <div class="historiqueJ2">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="player2Card0">Carte adv2 gauche:</td>                             
+            </tr>
+            <tr>
+                <td class="decktable" id="player2Card1">Carte adv2 droite:</td>   
+            </tr>
+            <tr>
+                <td class="decktable" id="historiquetablej2">Adv2 cartes jouées:</td>
+            </tr>
+        </table>
+    </div>
+    <div class="historiqueJ3">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="player3Card0">Carte adv3 gauche:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="player3Card1">Carte adv3 droite:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="historiquetablej3">Adv3 cartes jouées:</td>
+            </tr>
+        </table>
+    </div>
+    <div class="historiqueJ4">
+        <table class="decktable">
+            <tr>
+                <td class="decktable" id="player4Card0">Carte adv4 gauche:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="player4Card1">Carte adv4 droite:</td>
+            </tr>
+            <tr>
+                <td class="decktable" id="historiquetablej4">Adv4 cartes jouées:</td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

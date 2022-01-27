@@ -1,0 +1,120 @@
+body {
+    background-image: url("/img/gameboard.jpg");
+}
+
+table.playerCards {
+    background: #000000;
+    border-collapse: collapse;
+}
+
+td.playertable {
+    background: #FFFFFF;
+    width: 28vh;
+    height: 55vh;
+    padding: 0;
+    border: solid 1px;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+td.playerplay {
+    background: #FFFFFF;
+    width: 28vh;
+    height: 4vh;
+    padding: 0;
+    border: solid 1px;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+td.cardDesc {
+    background: #FFFFFF;
+    width: 25vh;
+    height: 7vh;
+    padding: 0;
+    border: solid 1px;
+    padding: 5px;
+    text-align: justify;
+    vertical-align: top;
+}
+
+.playerGrid {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+}
+
+.playButton {
+    width: 265px;
+    height: 50px;
+}
+
+.deck {
+    position: absolute;
+    top: 700px;
+    left: 900px;
+}
+
+table.decktable {
+    background: #000000;
+    border-collapse: collapse;
+}
+
+td.decktable {
+    background: #FFFFFF;
+    width: 50vh;
+    height: 5vh;
+    padding: 0;
+    border: solid 1px;
+    text-align: center;
+}
+
+.historiqueJ0 {
+    position: absolute;
+    top: 800px;
+    left: 10px;
+}
+
+.historiqueJ1 {
+    position: absolute;
+    top: 110px;
+    right: 20px;
+}
+
+.historiqueJ2 {
+    position: absolute;
+    top: 310px;
+    right: 20px;
+}
+
+.historiqueJ3 {
+    position: absolute;
+    top: 510px;
+    right: 20px;
+}
+
+.historiqueJ4 {
+    position: absolute;
+    top: 710px;
+    right: 20px;
+}
+
+.pioche {
+    position: absolute;
+    top: 25vh;
+    left: 105vh;
+    width: 150px;
+    color: white;
+    font-size: xx-large;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+input[type="button"] {
+    cursor: pointer;
+}
+
+select {
+    cursor: pointer;
+}
