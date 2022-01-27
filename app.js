@@ -111,7 +111,7 @@ io.on('connection', (socket) => {
     socket.on('register', (userName) => {
         saveUserInscription(userName);
         socket.id = userName;
-        console.log("user saved in db with name " + userName + " " + socket.id);
+        console.log("user saved in db with name " + socket.id);
     });
 
     socket.on('chat message', (msg) => {
