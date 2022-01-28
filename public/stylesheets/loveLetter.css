@@ -2,6 +2,19 @@ body {
     background-image: url("/img/gameboard.jpg");
 }
 
+.bandeauHaut {
+    position: absolute;
+    background: #ffd800;
+    top: 0px;
+    left: 0px;
+    height: 25px;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: small;
+    color:black;
+    padding: 5px;
+}
+
 table.playerCards {
     background: #000000;
     border-collapse: collapse;
@@ -40,8 +53,8 @@ td.cardDesc {
 
 .playerGrid {
     position: absolute;
-    top: 20px;
-    left: 50px;
+    top: 50px;
+    left: 10px;
 }
 
 .playButton {
@@ -52,7 +65,7 @@ td.cardDesc {
 .deck {
     position: absolute;
     top: 700px;
-    left: 900px;
+    left: 700px;
 }
 
 table.decktable {

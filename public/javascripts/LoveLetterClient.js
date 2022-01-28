@@ -8,30 +8,28 @@ var socket = io.connect("http://" + window.location.hostname + ":1337", { transp
 var messages = document.getElementById('messages');
 var form = document.getElementById('chatForm');
 var input = document.getElementById('chatInput');
-
-/*loginForm.addEventListener('submit', function (e) {
-    e.preventDefault;
-    if (login.value) {
-        socket.emit('register', login.value);
-    }
-    return false;
-});*/
+var registered = document.getElementById("joueursConnectes");
 
 form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (input.value) {
         console.log("msg envoyé : " + input.value);
-        socket.emit('chat message', input.value);
+        socket.emit('loveLetterChat message', input.value);
         input.value = '';
     }
+    //return false permet de ne pas recharger la page
     return false;
 });
 
-socket.on('chat message', function (msg) {
+socket.on('loveLetterChat message', function (msg) {
     var item = document.createElement('li');
     item.textContent = msg;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
+});
+
+socket.on('register', function (msg) {
+    registered.textContent = msg;
 });
 
 
@@ -420,15 +418,10 @@ async function sendInfo() {
     })
         .done(function (data) {
             console.log(data);
-        }).done(function () {
-            $.getJSON("/docs/name.json", function (data) {
-                var keys = Object.keys(data.members);
-                var i = keys.length;
-                document.getElementById("testListUsers").innerHTML = data.members["user" + i];
-            });
         })
 
     socket.emit('register', document.getElementById("loginName").value);
 
     $("#deckTable").addClass("hidden");
+    $("#chatDiv").removeClass("hidden");
 }

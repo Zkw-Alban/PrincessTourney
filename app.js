@@ -112,10 +112,20 @@ io.on('connection', (socket) => {
         saveUserInscription(userName);
         socket.id = userName;
         console.log("user saved in db with name " + socket.id);
+        var usersConnected = Array.from(io.sockets.sockets.values());
+        var idUsersConnected = new Array(usersConnected.length);
+        for (var i = 0; i < usersConnected.length; i++) {
+            idUsersConnected.push(usersConnected[i].id);
+        }
+        io.emit("register", idUsersConnected);
     });
 
     socket.on('chat message', (msg) => {
         io.emit('chat message', socket.id + ": " + msg);
+    });
+
+    socket.on('loveLetterChat message', (msg) => {
+        io.emit('loveLetterChat message', socket.id + ": " + msg);
     });
 });
 
