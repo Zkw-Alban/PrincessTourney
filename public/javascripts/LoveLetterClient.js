@@ -1,4 +1,41 @@
-﻿//id carte - image - nom - description
+﻿//gestion de la connexion et des sockets
+
+var socket = io.connect("http://" + window.location.hostname + ":1337", { transports: ['websocket', 'polling', 'flashsocket'] });
+//var socket = io.connect("http://127.0.0.1:1337", { transports: ['websocket', 'polling', 'flashsocket'] });
+
+//var loginForm = document.getElementById('loginForm');
+//var login = document.getElementById('loginName');
+var messages = document.getElementById('messages');
+var form = document.getElementById('chatForm');
+var input = document.getElementById('chatInput');
+
+/*loginForm.addEventListener('submit', function (e) {
+    e.preventDefault;
+    if (login.value) {
+        socket.emit('register', login.value);
+    }
+    return false;
+});*/
+
+form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value) {
+        console.log("msg envoyé : " + input.value);
+        socket.emit('chat message', input.value);
+        input.value = '';
+    }
+    return false;
+});
+
+socket.on('chat message', function (msg) {
+    var item = document.createElement('li');
+    item.textContent = msg;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+});
+
+
+//id carte - image - nom - description
 const NOCARD = [-1, "", "PAS DE CARTE", "Vous n'avez pas de carte dans cette main."]
 const ESPIONNE = [0, "img/0Espionne.jpg", "Espionne", "Si vous êtes le seul joueur en vie ayant joué ou défaussé une espionne durant la manche, vous gagnez 1 point supplémentaire."]
 const GARDE = [1, "img/1Garde.jpg", "Garde", "Devinez la carte d'un autre joueur pour l'éliminer (vous ne pouvez pas citer le Garde)."]
@@ -390,4 +427,8 @@ async function sendInfo() {
                 document.getElementById("testListUsers").innerHTML = data.members["user" + i];
             });
         })
+
+    socket.emit('register', document.getElementById("loginName").value);
+
+    $("#deckTable").addClass("hidden");
 }

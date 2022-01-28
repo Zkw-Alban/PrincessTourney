@@ -7,7 +7,7 @@
     <title>Love Letter</title>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="./javascripts/LoveLetterClient.js"></script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.js"></script>    
 </head>
 
 <body>
@@ -19,10 +19,14 @@
                     <td class="playertable" id="player0Card1"></td>
                 </tr>
                 <tr>
-                    <td class="playerplay" id="playerPlayCard0"><input class="playButton" id="playButton0" type="button"
-                            value="Jouer" onclick="jouer(JOUEURPRINCIPAL,0)"></td>
-                    <td class="playerplay" id="playerPlayCard0"><input class="playButton" id="playButton1" type="button"
-                            value="Jouer" onclick="jouer(JOUEURPRINCIPAL,1)"></td>
+                    <td class="playerplay" id="playerPlayCard0">
+                        <input class="playButton" id="playButton0" type="button"
+                               value="Jouer" onclick="jouer(JOUEURPRINCIPAL,0)">
+                    </td>
+                    <td class="playerplay" id="playerPlayCard0">
+                        <input class="playButton" id="playButton1" type="button"
+                               value="Jouer" onclick="jouer(JOUEURPRINCIPAL,1)">
+                    </td>
                 </tr>
                 <tr>
                     <td class="playerplay" id="playerPlaySelect0">
@@ -64,7 +68,7 @@
                             <option value="Comtesse">Comtesse</option>
                             <option value="Princesse">Princesse</option>
                         </select>
-                    </td>                    
+                    </td>
                 </tr>
                 <tr>
                     <td class="cardDesc" id="playerCardDesc0"></td>
@@ -80,17 +84,14 @@
     <img class="pioche" id="piocheimg" src="./img/pioche.png" onclick="pioche(JOUEURPRINCIPAL)">
     <p class="pioche" id="piocheNbCard">20</p>
     <input class="playButton" id="newGame" type="button" value="Nouvelle partie" onclick="newGame(5)"
-        style="position: absolute; top: 55vh; left: 105vh; width: 150px; cursor: pointer;">
+           style="position: absolute; top: 55vh; left: 105vh; width: 150px; cursor: pointer;">
     <div class="deck">
-        <table class="decktable">
+        <table class="decktable" id="deckTable">
             <tr>
                 <td class="decktable" id="deckcontent">DeckContent</td>
             </tr>
             <tr>
-                <td class="decktable" id="testLogin"><input type="text" id="loginName" name="name" required minlength="4" maxlength="8" size="10"><input class="playButton" id="sendLogin" type="button" value="Envoyer son nom" onclick="sendInfo()"></td>
-            </tr>
-            <tr>
-                <td class="decktable" id="testListUsers">TestListUsers</td>
+                <td class="decktable" id="testLogin"><input type="text" id="loginName" name="name" required minlength="4" maxlength="8" size="10" style="height:auto"><input class="playButton" id="sendLogin" type="button" value="Envoyer son nom" onclick="sendInfo()"></td>
             </tr>
         </table>
     </div>
@@ -117,10 +118,10 @@
     <div class="historiqueJ2">
         <table class="decktable">
             <tr>
-                <td class="decktable" id="player2Card0">Carte adv2 gauche:</td>                             
+                <td class="decktable" id="player2Card0">Carte adv2 gauche:</td>
             </tr>
             <tr>
-                <td class="decktable" id="player2Card1">Carte adv2 droite:</td>   
+                <td class="decktable" id="player2Card1">Carte adv2 droite:</td>
             </tr>
             <tr>
                 <td class="decktable" id="historiquetablej2">Adv2 cartes jouées:</td>
@@ -153,6 +154,13 @@
             </tr>
         </table>
     </div>
+    <div class="chat">
+        <ul id="messages"></ul>
+        <form class="chat" id="chatForm" action="">
+            <input class="input" id="chatInput" autocomplete="off" /><button id="sendButton">Send</button>
+        </form>
+    </div>
+    <script src="./javascripts/LoveLetterClient.js"></script>
 </body>
 
 </html>

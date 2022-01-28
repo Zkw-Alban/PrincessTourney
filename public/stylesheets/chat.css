@@ -28,7 +28,7 @@ body {
         outline: none;
     }
 
-#form > button {
+#chatForm > button {
     background: #333;
     border: none;
     padding: 0 1rem;
