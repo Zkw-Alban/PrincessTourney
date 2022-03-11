@@ -108,34 +108,46 @@ function refreshGameState(listeJoueurs) {
         getCard(listej[joueur][2][1][0], 1, listej[joueur]);
     }
 
+    //voir socket.on("StartNewGame")
     tourActuel = listeJoueurs[1];
 }
 
 
 function getCard(idCard, emplacement, joueur) {
     //affiche la carte du joueur à l'emplacement dans lequel elle se trouve
-    for (var index = -1; index < CARDLIST.length; index++) {
-        if (idCard == index) {
-            //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
-            //à régler car actuellement tout le monde voit tout au même endroit
-            if (index == -1) {
-                document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-                $("#player" + joueur[0] + "Card" + emplacement).html("[" + NOCARD[0] + "] " + NOCARD[2]);
-                if (joueur[0] == 0) {
-                    $("#playerCardDesc" + emplacement).html(NOCARD[3]);
-                }
-            } else {
-                document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
+    //si le joueur est mort on affiche qu'il est mort
+    if (joueur[1] == 0) {
+        document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-                $("#player" + joueur[0] + "Card" + emplacement).html("[" + CARDLIST[index][0] + "] " + CARDLIST[index][2]);
-                if (joueur[0] == 0) {
-                    $("#playerCardDesc" + emplacement).html(CARDLIST[index][3]);
-                }
-                break;
-            }            
+        $("#player" + joueur[0] + "Card" + emplacement).html("Joueur éliminé");
+        if (joueur[0] == 0) {
+            $("#playerCardDesc" + emplacement).html("Joueur éliminé");
         }
-    }
+    } else {
+        for (var index = -1; index < CARDLIST.length; index++) {
+            if (idCard == index) {
+                //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
+                //à régler car actuellement tout le monde voit tout au même endroit
+                if (index == -1) {
+                    document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
+
+                    $("#player" + joueur[0] + "Card" + emplacement).html(NOCARD[2]);
+                    if (joueur[0] == 0) {
+                        $("#playerCardDesc" + emplacement).html(NOCARD[3]);
+                    }
+                } else {
+                    document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
+
+                    $("#player" + joueur[0] + "Card" + emplacement).html(CARDLIST[index][2]);
+                    if (joueur[0] == 0) {
+                        $("#playerCardDesc" + emplacement).html(CARDLIST[index][3]);
+                    }
+                    break;
+                }
+            }
+        }
+    }    
 }
 
 //vérifie si on a la princesse dans la main et renvoie la position de la carte non princesse dans la main (donc de la carte à jouer)
@@ -248,14 +260,6 @@ function validerJouer(carteJouee, emplacement, joueurCible, roleCible) {
 //envoie l'info au serveur que le joueur a joué
     console.log("Vous avez joué la carte " + carteJouee[2] + " avec le joueur ciblé " + joueurCible + " et le role ciblé " + roleCible);
     socket.emit('jouer', [document.getElementById("loginName").value, carteJouee, emplacement, joueurCible, roleCible]);
-
-    //afficher une carte vide
-    document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
-
-    $("#player" + joueur[0] + "Card" + emplacement).html("[" + NOCARD[0] + "] " + NOCARD[2]);
-    if (joueur[0] == 0) {
-        $("#playerCardDesc" + emplacement).html(NOCARD[3]);
-    }
 }
 
 function newGame(nbJoueurs) {
