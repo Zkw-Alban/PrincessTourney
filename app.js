@@ -135,12 +135,12 @@ var historiqueJ1 = [];
 var historiqueJ2 = [];
 var historiqueJ3 = [];
 var historiqueJ4 = [];
-//id joueur - statut (1 = en vie, 0 = mort) - main - dernière carte jouée - historique des cartes jouées - socket.id du joueur
-var J0 = [0, 1, mainJ0, "", historiqueJ0,""];
-var J1 = [1, 1, mainJ1, "", historiqueJ1,""];
-var J2 = [2, 1, mainJ2, "", historiqueJ2,""];
-var J3 = [3, 1, mainJ3, "", historiqueJ3,""];
-var J4 = [4, 1, mainJ4, "", historiqueJ4,""];
+//0:id joueur - 1:statut (1 = en vie, 0 = mort) - 2:main - 3:dernière carte jouée - 4:historique des cartes jouées - 5:nom du joueur (socket.id) - 6: emplacement où afficher le joueur
+var J0 = [0, 1, mainJ0, "", historiqueJ0,"",""];
+var J1 = [1, 1, mainJ1, "", historiqueJ1,"",""];
+var J2 = [2, 1, mainJ2, "", historiqueJ2,"",""];
+var J3 = [3, 1, mainJ3, "", historiqueJ3,"",""];
+var J4 = [4, 1, mainJ4, "", historiqueJ4,"",""];
 var listeJoueurs = [J0, J1, J2, J3, J4];
 
 //algorithme de Fisher-Yates pour mélanger une liste
@@ -184,21 +184,15 @@ let tourActuel = listeJoueurs[0];
 
 function tourSuivant() {
     //détermine le prochain joueur à jouer
-    var tourAcheve = tourActuel;
+    var tourAcheve = tourActuel[0];
     //on repart du joueur actuel et on parcours la liste
-    for (var i = tourActuel[0] + 1; i <= NBJOUEURS; i++) {
+    for (var i = tourAcheve + 1; i <= NBJOUEURS; i++) {
+        if (i == 5) {
+            i = 0;
+        }
         if (listeJoueurs[i][1] == 1) { //si le joueur est en vie
             tourActuel = listeJoueurs[i];
             break;
-        }
-    }
-    //si c'est le dernier joueur du tour alors on recommence à zéro pour trouver le prochain jour
-    if (tourActuel == tourAcheve) {
-        for (var i = 0; i <= NBJOUEURS; i++) {
-            if (listeJoueurs[i][1] == 1) { //si le joueur est en vie
-                tourActuel = listeJoueurs[i];
-                break;
-            }
         }
     }
 }
@@ -264,6 +258,7 @@ function hasWon(listeJoueurs) {
 }
 
 function validerJouer(joueur, carteJouee, emplacement) {
+    //quand la carte est jouée on l'historise et on nettoie l'emplacement qu'elle occupait
     //on historise la carte jouée dans la liste
     joueur[4].push(carteJouee[2]);
     //on log la dernière carte jouée (pour effets de cartes)
@@ -281,20 +276,35 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
     //idée : enlever les gens morts de la liste des gens vivants
     io.emit('loveLetterChat message', "GAME INFO: Le joueur " + joueur[5] + " a joué " + carteJouee[2] + " en ciblant le joueur " + joueurCible + " et le role " + roleCible);
     if (carteJouee[0] == GARDE[0]) {
-        var roleReelJoueurCible = getCardInHand(listeJoueurs[joueurCible])[2].toLowerCase();
-        if (roleReelJoueurCible == roleCible.toLowerCase()) {
-            //document.getElementById("player" + listeJoueurs[joueurCible][0] + "Card1").innerHTML = "Joueur décédé.";
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + joueurCible + " a été éliminé");
-            listeJoueurs[joueurCible][1] = 0;
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
+
+        } else {
+            var roleReelJoueurCible = getCardInHand(listeJoueurs[joueurCible])[2].toLowerCase();
+            if (roleReelJoueurCible == roleCible.toLowerCase()) {
+                //quand le joueur a été démasqué, on l'élimine (joueur[1] = 0) et on historise ses cartes en main pour qu'elle apparaisse dans l'historique
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " a été éliminé");
+                listeJoueurs[joueurCible][1] = 0;
+                listeJoueurs[joueurCible][4].push(getCardInHand(listeJoueurs[joueurCible])[2]);
+                listeJoueurs[joueurCible][3] = getCardInHand(listeJoueurs[joueurCible]);
+            }
+            //valider l'action
+            validerJouer(joueur, carteJouee, emplacement);
+            //au final on passe au joueur suivant
+            tourSuivant();
         }
-        //valider l'action
-        validerJouer(joueur, carteJouee, emplacement);
 
     } else if (carteJouee[0] == PRETRE[0]) {
-        validerJouer(joueur, carteJouee, emplacement);
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
 
+        } else {
+            validerJouer(joueur, carteJouee, emplacement);
+            //au final on passe au joueur suivant
+            tourSuivant();
+        }
     } else if (carteJouee[0] == BARON[0]) {
-        if (listeJoueurs[joueurCible][3] != SERVANTE && joueurCible != "0" && listeJoueurs[joueurCible][1] == 1) {
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
+
+        } else {
             //on valide le fait de jouer avant d'appliquer les effets du baron
             validerJouer(joueur, carteJouee, emplacement);
             //joueur vivant se trouve avec l'id
@@ -303,44 +313,67 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
             //le joueur ciblé meure s'il est moins fort
             if (forceInitiateur > forceJoueurCible) {
                 listeJoueurs[joueurCible][1] = 0;
+                listeJoueurs[joueurCible][4].push(getCardInHand(listeJoueurs[joueurCible])[2]);
+                listeJoueurs[joueurCible][3] = getCardInHand(listeJoueurs[joueurCible]);
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " a été éliminé");
             } else if (forceInitiateur < forceJoueurCible) {
                 listeJoueurs[joueur[0]][1] = 0;
+                listeJoueurs[joueur[0]][4].push(getCardInHand(listeJoueurs[joueur[0]])[2]);
+                listeJoueurs[joueur[0]][3] = getCardInHand(listeJoueurs[joueur[0]]);
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueur[0]][5] + " a été éliminé");
             }
+            //au final on passe au joueur suivant
+            tourSuivant();
         }
+    }
 
-    } else if (carteJouee[0] == PRINCE[0]) {
-        if ((listeJoueurs[joueurCible][3] != SERVANTE && listeJoueurs[joueurCible][1] == 1) || joueurCible == "0") {
+    else if (carteJouee[0] == PRINCE[0]) {
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
+
+        } else {
             validerJouer(joueur, carteJouee, emplacement);
             //on indique quelle carte a été défaussée
             var carteDefaussee = getCardInHand(listeJoueurs[joueurCible]);
             listeJoueurs[joueurCible][4].push(carteDefaussee[2]);
             //si la princesse est défaussée son propriétaire est mort
             if (carteDefaussee == PRINCESSE) {
-                listeJoueurs[joueur[0]][1] = 0;
-                document.getElementById("player" + listeJoueurs[joueurCible][0] + "Card1").innerHTML = "Joueur décédé.";
-                //sinon on vide sa main et on repioche une carte
+                listeJoueurs[joueurCible][1] = 0;
+                listeJoueurs[joueurCible][3] = PRINCESSE;
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " a été éliminé car sa Princesse a été défaussée.");
+            //sinon on vide sa main et on repioche une carte
             } else {
                 listeJoueurs[joueurCible][2][0] = NOCARD;
                 listeJoueurs[joueurCible][2][1] = NOCARD;
                 pioche(listeJoueurs[joueurCible]);
             }
-        }
+            //au final on passe au joueur suivant
+            tourSuivant();
+        }    
 
     } else if (carteJouee[0] == CHANCELIER[0]) {
+        //le chancelier pioche et rejoue
         validerJouer(joueur, carteJouee, emplacement);
         pioche(joueur);
 
     } else if (carteJouee[0] == ROI[0]) {
-        if (listeJoueurs[joueurCible][3] != SERVANTE && listeJoueurs[joueurCible][1] == 1 && joueurCible != "0") {
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
+
+        } else {
             validerJouer(joueur, carteJouee, emplacement);
             //on prend les cartes des deux joueurs
             var carteJoueurCible = getCardInHand(listeJoueurs[joueurCible]);
             var carteInitiateur = getCardInHand(listeJoueurs[joueur[0]]);
             //on échange les cartes des deux joueurs et on vide la main droite
+            listeJoueurs[joueurCible][2][0] = NOCARD;
+            listeJoueurs[joueurCible][2][1] = NOCARD;
             getCard(carteInitiateur[0], 0, listeJoueurs[joueurCible]);
-            getCard(NOCARD[0], 0, listeJoueurs[joueurCible]);
+            //regarder l'autre main ?
+            listeJoueurs[joueur[0]][2][0] = NOCARD;
+            listeJoueurs[joueur[0]][2][1] = NOCARD;
             getCard(carteJoueurCible[0], 0, listeJoueurs[joueur[0]]);
-            getCard(NOCARD[0], 0, listeJoueurs[joueur[0]]);
+          //  getCard(NOCARD[0], 1, listeJoueurs[joueur[0]]);
+            //au final on passe au joueur suivant
+            tourSuivant();
         }
 
         //la princesse est impossible à jouer
@@ -348,12 +381,9 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
 
     else {
         validerJouer(joueur, carteJouee, emplacement);
-    }
-
-    //au final on passe au joueur suivant
-    if (carteJouee != CHANCELIER) {
+        //au final on passe au joueur suivant
         tourSuivant();
-    }    
+    }
 }
 
 
@@ -425,18 +455,23 @@ io.on('connection', (socket) => {
         if (j0id == "") {
             j0id = userName;
             idJoueurActuel = J0;
+            io.emit("loveLetterChat message", "GAMEINFO: Le joueur " + userName + " a pris la place de J0.");
         } else if (j1id == "") {
             j1id = userName;
             idJoueurActuel = J1;
+            io.emit("loveLetterChat message", "GAMEINFO: Le joueur " + userName + " a pris la place de J1.");
         } else if (j2id == "") {
             j2id = userName;
             idJoueurActuel = J2;
+            io.emit("loveLetterChat message", "GAMEINFO: Le joueur " + userName + " a pris la place de J2.");
         } else if (j3id == "") {
             j3id = userName;
             idJoueurActuel = J3;
+            io.emit("loveLetterChat message", "GAMEINFO: Le joueur " + userName + " a pris la place de J3.");
         } else if (j4id == "") {
             j4id = userName;
             idJoueurActuel = J4;
+            io.emit("loveLetterChat message", "GAMEINFO: Le joueur " + userName + " a pris la place de J4.");
         }
 
         console.log("user saved in db with name " + socket.id);

@@ -38,24 +38,26 @@ socket.on('register', function (msg) {
 
 socket.on('startNewGame', (listeJoueurs) => {
     //rafraichir l'affichage
-    //listeJoueurs[0] = liste des joueurs et leur état actuel, listeJoueurs[1] = tourActuel (joueur à qui c'est le tour de jouer)
+    //listeJoueurs[0] = liste des joueurs et leur état actuel, listeJoueurs[1] = tourActuel (joueur à qui c'est le tour de jouer)    
+    //listeDesJoueurs = listeJoueurs[0];
+    getShowingOrder();
     refreshGameState(listeJoueurs);
-    listeDesJoueurs = listeJoueurs[0];
 });
 
 socket.on('piocher', (objet) => {
     //rafraichir l'affichage
     //objet[0] = DECK.length - objet[1] = [listeJoueurs, tourActuel]
+    //listeDesJoueurs = objet[1][0];
     deckLength = objet[0];
     displayPioche(deckLength);
     refreshGameState(objet[1]);
-    listeDesJoueurs = objet[1][0];
+    
 });
 
 socket.on('jouer', (listeJoueurs) => {
     //rafraichir l'affichage
     //listeJoueurs[0] = liste des joueurs et leur état actuel, listeJoueurs[1] = tourActuel (joueur à qui c'est le tour de jouer)
-    listeDesJoueurs = listeJoueurs[0];
+    //listeDesJoueurs = listeJoueurs[0];
     refreshGameState(listeJoueurs);    
 });
 
@@ -85,11 +87,16 @@ let historiqueADV1 = [];
 let historiqueADV2 = [];
 let historiqueADV3 = [];
 let historiqueADV4 = [];
-let JOUEURPRINCIPAL = [0, 1, mainJoueur, "", historiqueJoueur];
-let ADV1 = [1, 1, mainADV1, "", historiqueADV1];
-let ADV2 = [2, 1, mainADV2, "", historiqueADV2];
-let ADV3 = [3, 1, mainADV3, "", historiqueADV3];
-let ADV4 = [4, 1, mainADV4, "", historiqueADV4];
+let emplacementJ0 = 0;
+let emplacementJ1 = 1;
+let emplacementJ2 = 2;
+let emplacementJ3 = 3;
+let emplacementJ4 = 4;
+let JOUEURPRINCIPAL = [0, 1, mainJoueur, "", historiqueJoueur,"",""];
+let ADV1 = [1, 1, mainADV1, "", historiqueADV1,"",""];
+let ADV2 = [2, 1, mainADV2, "", historiqueADV2,"",""];
+let ADV3 = [3, 1, mainADV3, "", historiqueADV3,"",""];
+let ADV4 = [4, 1, mainADV4, "", historiqueADV4,"",""];
 let listeDesJoueurs = [JOUEURPRINCIPAL, ADV1, ADV2, ADV3, ADV4];
 
 let deckLength = 20;
@@ -101,47 +108,136 @@ var idJoueurClient = JOUEURPRINCIPAL;
 
 function refreshGameState(listeJoueurs) {
 //rafraichit le visuel du jeu pour correspondre à l'état sur le serveur et actualise le joueur qui doit jouer
-    var listej = listeJoueurs[0];
-        
-    for (var joueur = 0; joueur < listej.length; joueur++) {
-        getCard(listej[joueur][2][0][0], 0, listej[joueur]);
-        getCard(listej[joueur][2][1][0], 1, listej[joueur]);
+    listeDesJoueurs = listeJoueurs[0];
+    //on actualise l'ordre d'affichage (même s'il ne devrait pas bouger)
+    getShowingOrder();
+
+    for (var joueur = 0; joueur < listeDesJoueurs.length; joueur++) {
+        showCard(listeDesJoueurs[joueur][2][0][0], 0, listeDesJoueurs[joueur]);
+        showCard(listeDesJoueurs[joueur][2][1][0], 1, listeDesJoueurs[joueur]);
+        document.getElementById("historiquetablej" + listeDesJoueurs[joueur][6]).innerHTML = listeDesJoueurs[joueur][5] + " : " + listeDesJoueurs[joueur][4];
     }
 
-    //voir socket.on("StartNewGame")
+    //voir socket.on("StartNewGame") - on regarde à qui c'est le tour de jouer
     tourActuel = listeJoueurs[1];
+
+    //actualiser l'historique
+    /*for (var i = 0; i < listej.length; i++) {
+        document.getElementById("historiquetablej" + listej[i][6]).innerHTML = listeDesJoueurs[i][5] + " : " + listeDesJoueurs[i][4];
+    }*/
 }
 
+function getShowingOrder() {
+    if (idJoueurClient[0] == 0) {
+        /*emplacementJ0 = 0;
+        emplacementJ1 = 1;
+        emplacementJ2 = 2;
+        emplacementJ3 = 3;
+        emplacementJ4 = 4;*/
+        listeDesJoueurs[0][6] = 0;
+        listeDesJoueurs[1][6] = 1;
+        listeDesJoueurs[2][6] = 2;
+        listeDesJoueurs[3][6] = 3;
+        listeDesJoueurs[4][6] = 4;        
+    } else if (idJoueurClient[0] == 1) {
+       /* emplacementJ0 = 4;
+        emplacementJ1 = 0;
+        emplacementJ2 = 1;
+        emplacementJ3 = 3;
+        emplacementJ4 = 4;*/
+        listeDesJoueurs[0][6] = 4;
+        listeDesJoueurs[1][6] = 0;
+        listeDesJoueurs[2][6] = 1;
+        listeDesJoueurs[3][6] = 2;
+        listeDesJoueurs[4][6] = 3;
+        //on actualise les dessins de cartes
+        document.getElementById("adv1").src = "./img/backCardJ2.png";
+        document.getElementById("adv2").src = "./img/backCardJ3.png";
+        document.getElementById("adv3").src = "./img/backCardJ4.png";
+        document.getElementById("adv4").src = "./img/backCardJ0.png";
+    } else if (idJoueurClient[0] == 2) {
+      /*  emplacementJ0 = 3;
+        emplacementJ1 = 4;
+        emplacementJ2 = 0;
+        emplacementJ3 = 1;
+        emplacementJ4 = 2;*/
+        listeDesJoueurs[0][6] = 3;
+        listeDesJoueurs[1][6] = 4;
+        listeDesJoueurs[2][6] = 0;
+        listeDesJoueurs[3][6] = 1;
+        listeDesJoueurs[4][6] = 2;
+        //on actualise les dessins de cartes
+        document.getElementById("adv1").src = "./img/backCardJ3.png";
+        document.getElementById("adv2").src = "./img/backCardJ4.png";
+        document.getElementById("adv3").src = "./img/backCardJ0.png";
+        document.getElementById("adv4").src = "./img/backCardJ1.png";
+    } else if (idJoueurClient[0] == 3) {
+       /* emplacementJ0 = 2;
+        emplacementJ1 = 3;
+        emplacementJ2 = 4;
+        emplacementJ3 = 0;
+        emplacementJ4 = 1;*/
+        listeDesJoueurs[0][6] = 2;
+        listeDesJoueurs[1][6] = 3;
+        listeDesJoueurs[2][6] = 4;
+        listeDesJoueurs[3][6] = 0;
+        listeDesJoueurs[4][6] = 1;
+        //on actualise les dessins de cartes
+        document.getElementById("adv1").src = "./img/backCardJ4.png";
+        document.getElementById("adv2").src = "./img/backCardJ0.png";
+        document.getElementById("adv3").src = "./img/backCardJ1.png";
+        document.getElementById("adv4").src = "./img/backCardJ2.png";
+    } else if (idJoueurClient[0] == 4) {
+       /* emplacementJ0 = 1;
+        emplacementJ1 = 2;
+        emplacementJ2 = 3;
+        emplacementJ3 = 4;
+        emplacementJ4 = 0;*/
+        listeDesJoueurs[0][6] = 1;
+        listeDesJoueurs[1][6] = 2;
+        listeDesJoueurs[2][6] = 3;
+        listeDesJoueurs[3][6] = 4;
+        listeDesJoueurs[4][6] = 0;
+        //on actualise les dessins de cartes
+        document.getElementById("adv1").src = "./img/backCardJ0.png";
+        document.getElementById("adv2").src = "./img/backCardJ1.png";
+        document.getElementById("adv3").src = "./img/backCardJ2.png";
+        document.getElementById("adv4").src = "./img/backCardJ3.png";
+    }
+}
 
-function getCard(idCard, emplacement, joueur) {
+function showCard(idCard, emplacement, joueur) {
     //affiche la carte du joueur à l'emplacement dans lequel elle se trouve
-
     //si le joueur est mort on affiche qu'il est mort
     if (joueur[1] == 0) {
         document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-        $("#player" + joueur[0] + "Card" + emplacement).html("Joueur éliminé");
-        if (joueur[0] == 0) {
+        $("#player" + joueur[6] + "Card" + emplacement).html("Joueur éliminé");
+        if (joueur[6] == 0) {
             $("#playerCardDesc" + emplacement).html("Joueur éliminé");
         }
-    } else {
+    } else if (idJoueurClient[0] == joueur[0]) {
         for (var index = -1; index < CARDLIST.length; index++) {
             if (idCard == index) {
                 //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
                 //à régler car actuellement tout le monde voit tout au même endroit
                 if (index == -1) {
-                    document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
+                    document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-                    $("#player" + joueur[0] + "Card" + emplacement).html(NOCARD[2]);
-                    if (joueur[0] == 0) {
+                    if (joueur[6] == 0) {
+                        $("#player" + joueur[6] + "CardName" + emplacement).html(NOCARD[2]);
                         $("#playerCardDesc" + emplacement).html(NOCARD[3]);
+                    } else {
+                        $("#player" + joueur[6] + "Card" + emplacement).html(NOCARD[2]);
                     }
                 } else {
-                    document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
+                    document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
 
-                    $("#player" + joueur[0] + "Card" + emplacement).html(CARDLIST[index][2]);
-                    if (joueur[0] == 0) {
+                    if (joueur[6] == 0) {
+                        $("#player" + joueur[6] + "CardName" + emplacement).html("["+CARDLIST[index][0]+"] "+CARDLIST[index][2]);
                         $("#playerCardDesc" + emplacement).html(CARDLIST[index][3]);
+                    } else {
+                        $("#player" + joueur[6] + "Card" + emplacement).html("[" + CARDLIST[index][0] + "] " + CARDLIST[index][2]);
                     }
                     break;
                 }
@@ -166,9 +262,9 @@ function checkPrincesse(joueur) {
 function checkComtesse(joueur) {
     card0 = joueur[2][0];
     card1 = joueur[2][1];
-    if (card0 == COMTESSE && (card1 == PRINCE || card1 == ROI || card1 == PRINCESSE)) {
+    if (card0[0] == COMTESSE[0] && (card1[0] == PRINCE[0] || card1[0] == ROI[0] || card1[0] == PRINCESSE[0])) {
         return 0;
-    } else if (card1 == COMTESSE && (card0 == PRINCE || card0 == ROI || card0 == PRINCESSE)) {
+    } else if (card1[0] == COMTESSE[0] && (card0[0] == PRINCE[0] || card0[0] == ROI[0] || card0[0] == PRINCESSE[0])) {
         return 1;
     }
     else return 2;
@@ -216,16 +312,14 @@ function jouer(emplacement) {
             //idée : enlever les gens morts de la liste des gens vivants
             if (carteJouee == GARDE) {
                 if (listeDesJoueurs[joueurCible][3] != SERVANTE && joueurCible != idJoueurClient[0] && listeDesJoueurs[joueurCible][1] == 1) {
-                    //valider l'action
                     validerJouer(carteJouee, emplacement, joueurCible, roleCible);
                 }
 
-            } else if (carteJouee == PRETRE && joueurCible != "0") {
+            } else if (carteJouee == PRETRE && joueurCible != idJoueurClient[0]) {
                 validerJouer(carteJouee, emplacement, joueurCible, roleCible);
 
             } else if (carteJouee == BARON) {
                 if (listeDesJoueurs[joueurCible][3] != SERVANTE && joueurCible != idJoueurClient[0] && listeDesJoueurs[joueurCible][1] == 1) {
-                    //on valide le fait de jouer avant d'appliquer les effets du baron
                     validerJouer(carteJouee, emplacement, joueurCible, roleCible);
                 }
 
@@ -247,7 +341,6 @@ function jouer(emplacement) {
 
             else {
                 validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-                //jouerIA(listeDesJoueurs[idJC]);
             }
 
             //verifier la victoire
@@ -267,15 +360,16 @@ function newGame(nbJoueurs) {
 }
 
 async function sendInfo() {
-    $.post("/users", {
+  /*  $.post("/users", {
         name: document.getElementById("loginName").value
     })
         .done(function (data) {
             console.log(data);
-        })
+        })*/
 
     socket.emit('register', document.getElementById("loginName").value);
 
     $("#deckTable").addClass("hidden");
     $("#chatDiv").removeClass("hidden");
+    $("#chatForm").removeClass("hidden");
 }
