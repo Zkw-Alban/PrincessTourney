@@ -39,7 +39,6 @@ socket.on('register', function (msg) {
 socket.on('startNewGame', (listeJoueurs) => {
     //rafraichir l'affichage
     //listeJoueurs[0] = liste des joueurs et leur état actuel, listeJoueurs[1] = tourActuel (joueur à qui c'est le tour de jouer)    
-    //listeDesJoueurs = listeJoueurs[0];
     getShowingOrder();
     refreshGameState(listeJoueurs);
 });
@@ -47,26 +46,33 @@ socket.on('startNewGame', (listeJoueurs) => {
 socket.on('piocher', (objet) => {
     //rafraichir l'affichage
     //objet[0] = DECK.length - objet[1] = [listeJoueurs, tourActuel]
-    //listeDesJoueurs = objet[1][0];
     deckLength = objet[0];
     displayPioche(deckLength);
-    refreshGameState(objet[1]);
-    
+    refreshGameState(objet[1]);    
 });
 
 socket.on('jouer', (listeJoueurs) => {
     //rafraichir l'affichage
     //listeJoueurs[0] = liste des joueurs et leur état actuel, listeJoueurs[1] = tourActuel (joueur à qui c'est le tour de jouer)
-    //listeDesJoueurs = listeJoueurs[0];
     refreshGameState(listeJoueurs);    
 });
 
+socket.on('pretre', (msg) => {
+    //rafraichir l'affichage
+    //le pretre indique la carte possédée par l'adversaire. format : [0] = id du joueur du pretre | [1] = message
+    if (idJoueurClient[0] == msg[0]) {
+        var item = document.createElement('li');
+        item.textContent = msg[1];
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+});
 
 //id carte - image - nom - description
 const NOCARD = [-1, "", "PAS DE CARTE", "Vous n'avez pas de carte dans cette main."]
 const ESPIONNE = [0, "img/0Espionne.jpg", "Espionne", "Si vous êtes le seul joueur en vie ayant joué ou défaussé une espionne durant la manche, vous gagnez 1 point supplémentaire."]
 const GARDE = [1, "img/1Garde.jpg", "Garde", "Devinez la carte d'un autre joueur pour l'éliminer (vous ne pouvez pas citer le Garde)."]
-const PRETRE = [2, "img/2Pretre.jpg", "Pretre", "Regardez la main d'un joueur de votre choix."]
+const PRETRE = [2, "img/2Pretre.jpg", "Pretre", "Regardez la main d'un joueur de votre choix. La carte du joueur ciblé s'affichera dans le chat."]
 const BARON = [3, "img/3Baron.jpg", "Baron", "Comparez la carte de votre main avec celle d'un adversaire. Celui qui a la carte la plus faible est éliminé."]
 const SERVANTE = [4, "img/4Servante.jpg", "Servante", "Aucun joueur ne peut vous cibler ce tour-ci."]
 const PRINCE = [5, "img/5Prince.jpg", "Prince", "Défaussez la carte d'un joueur (y compris vous-même)."]
@@ -87,11 +93,6 @@ let historiqueADV1 = [];
 let historiqueADV2 = [];
 let historiqueADV3 = [];
 let historiqueADV4 = [];
-let emplacementJ0 = 0;
-let emplacementJ1 = 1;
-let emplacementJ2 = 2;
-let emplacementJ3 = 3;
-let emplacementJ4 = 4;
 let JOUEURPRINCIPAL = [0, 1, mainJoueur, "", historiqueJoueur,"",""];
 let ADV1 = [1, 1, mainADV1, "", historiqueADV1,"",""];
 let ADV2 = [2, 1, mainADV2, "", historiqueADV2,"",""];
@@ -115,7 +116,7 @@ function refreshGameState(listeJoueurs) {
     for (var joueur = 0; joueur < listeDesJoueurs.length; joueur++) {
         showCard(listeDesJoueurs[joueur][2][0][0], 0, listeDesJoueurs[joueur]);
         showCard(listeDesJoueurs[joueur][2][1][0], 1, listeDesJoueurs[joueur]);
-        document.getElementById("historiquetablej" + listeDesJoueurs[joueur][6]).innerHTML = listeDesJoueurs[joueur][5] + " : " + listeDesJoueurs[joueur][4];
+        document.getElementById("historiquetablej" + listeDesJoueurs[joueur][6]).innerHTML = listeDesJoueurs[joueur][5] + " (J" + listeDesJoueurs[joueur][0] + ") : " + listeDesJoueurs[joueur][4];
     }
 
     //voir socket.on("StartNewGame") - on regarde à qui c'est le tour de jouer
@@ -129,22 +130,12 @@ function refreshGameState(listeJoueurs) {
 
 function getShowingOrder() {
     if (idJoueurClient[0] == 0) {
-        /*emplacementJ0 = 0;
-        emplacementJ1 = 1;
-        emplacementJ2 = 2;
-        emplacementJ3 = 3;
-        emplacementJ4 = 4;*/
         listeDesJoueurs[0][6] = 0;
         listeDesJoueurs[1][6] = 1;
         listeDesJoueurs[2][6] = 2;
         listeDesJoueurs[3][6] = 3;
         listeDesJoueurs[4][6] = 4;        
     } else if (idJoueurClient[0] == 1) {
-       /* emplacementJ0 = 4;
-        emplacementJ1 = 0;
-        emplacementJ2 = 1;
-        emplacementJ3 = 3;
-        emplacementJ4 = 4;*/
         listeDesJoueurs[0][6] = 4;
         listeDesJoueurs[1][6] = 0;
         listeDesJoueurs[2][6] = 1;
@@ -156,11 +147,6 @@ function getShowingOrder() {
         document.getElementById("adv3").src = "./img/backCardJ4.png";
         document.getElementById("adv4").src = "./img/backCardJ0.png";
     } else if (idJoueurClient[0] == 2) {
-      /*  emplacementJ0 = 3;
-        emplacementJ1 = 4;
-        emplacementJ2 = 0;
-        emplacementJ3 = 1;
-        emplacementJ4 = 2;*/
         listeDesJoueurs[0][6] = 3;
         listeDesJoueurs[1][6] = 4;
         listeDesJoueurs[2][6] = 0;
@@ -172,11 +158,6 @@ function getShowingOrder() {
         document.getElementById("adv3").src = "./img/backCardJ0.png";
         document.getElementById("adv4").src = "./img/backCardJ1.png";
     } else if (idJoueurClient[0] == 3) {
-       /* emplacementJ0 = 2;
-        emplacementJ1 = 3;
-        emplacementJ2 = 4;
-        emplacementJ3 = 0;
-        emplacementJ4 = 1;*/
         listeDesJoueurs[0][6] = 2;
         listeDesJoueurs[1][6] = 3;
         listeDesJoueurs[2][6] = 4;
@@ -188,11 +169,6 @@ function getShowingOrder() {
         document.getElementById("adv3").src = "./img/backCardJ1.png";
         document.getElementById("adv4").src = "./img/backCardJ2.png";
     } else if (idJoueurClient[0] == 4) {
-       /* emplacementJ0 = 1;
-        emplacementJ1 = 2;
-        emplacementJ2 = 3;
-        emplacementJ3 = 4;
-        emplacementJ4 = 0;*/
         listeDesJoueurs[0][6] = 1;
         listeDesJoueurs[1][6] = 2;
         listeDesJoueurs[2][6] = 3;
@@ -246,18 +222,6 @@ function showCard(idCard, emplacement, joueur) {
     }    
 }
 
-//vérifie si on a la princesse dans la main et renvoie la position de la carte non princesse dans la main (donc de la carte à jouer)
-function checkPrincesse(joueur) {
-    card0 = joueur[2][0];
-    card1 = joueur[2][1];
-    if (card0 == PRINCESSE) {
-        return 1;
-    } else if (card1 == PRINCESSE) {
-        return 0;
-    }
-    else return 2;
-}
-
 //vérifie si on doit absolument jouer la comtesse et renvoie la position de la carte comtesse dans la main (donc de la carte à jouer)
 function checkComtesse(joueur) {
     card0 = joueur[2][0];
@@ -293,8 +257,7 @@ function jouer(emplacement) {
 
     //on vérifie que le joueur qui clique sur "jouer" est bien celui dont c'est le tour
     if (tourActuel[0] == idJoueurClient[0]) {
-
-        idJC = idJoueurClient[0];
+        idJC = idJoueurClient[0];        
         //emplacement a la valeur 0 (gauche) ou 1 (droite) 
         if (listeDesJoueurs[idJC][2][emplacement][0] == NOCARD[0]) {
             alert("Vous n'avez aucune carte à jouer à cet emplacement.");
@@ -308,39 +271,28 @@ function jouer(emplacement) {
             selectRC = document.getElementById("playSelectRole" + emplacement);
             roleCible = selectRC.options[selectRC.selectedIndex].value;
 
-            //effet des cartes
-            //idée : enlever les gens morts de la liste des gens vivants
-            if (carteJouee == GARDE) {
-                if (listeDesJoueurs[joueurCible][3] != SERVANTE && joueurCible != idJoueurClient[0] && listeDesJoueurs[joueurCible][1] == 1) {
+            //si la comtesse n'est pas obligatoire à jouer
+            if (checkComtesse(listeDesJoueurs[idJC]) == 2) {
+                //effet des cartes
+                //idée : enlever les gens morts de la liste des gens vivants
+                if (carteJouee[0] == GARDE[0] || carteJouee[0] == PRETRE[0] || carteJouee[0] == BARON[0] || carteJouee[0] == ROI[0]) {
+                    if (joueurCible != idJoueurClient[0]) {
+                        validerJouer(carteJouee, emplacement, joueurCible, roleCible);
+                    } else {
+                        alert("Vous ne pouvez pas vous ciblez vous même avec la carte " + carteJouee[2]);
+                    }
+                    //la princesse est impossible à jouer
+                } else if (carteJouee[0] == PRINCESSE[0]) { }
+
+                else {
                     validerJouer(carteJouee, emplacement, joueurCible, roleCible);
                 }
-
-            } else if (carteJouee == PRETRE && joueurCible != idJoueurClient[0]) {
+            }
+            //si la comtesse doit être jouée et qu'elle est effectivement jouée on valide
+            else if (carteJouee[0] == COMTESSE[0]) {
                 validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-
-            } else if (carteJouee == BARON) {
-                if (listeDesJoueurs[joueurCible][3] != SERVANTE && joueurCible != idJoueurClient[0] && listeDesJoueurs[joueurCible][1] == 1) {
-                    validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-                }
-
-            } else if (carteJouee == PRINCE) {
-                if ((listeDesJoueurs[joueurCible][3] != SERVANTE && listeDesJoueurs[joueurCible][1] == 1) || joueurCible == idJoueurClient[0]) {
-                    validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-                }
-
-            } else if (carteJouee == CHANCELIER) {
-                validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-
-            } else if (carteJouee == ROI) {
-                if (listeDesJoueurs[joueurCible][3] != SERVANTE && listeDesJoueurs[joueurCible][1] == 1 && joueurCible != idJoueurClient[0]) {
-                    validerJouer(carteJouee, emplacement, joueurCible, roleCible);
-                }
-
-                //la princesse est impossible à jouer
-            } else if (carteJouee == PRINCESSE) { }
-
-            else {
-                validerJouer(carteJouee, emplacement, joueurCible, roleCible);
+            } else {
+                alert("Vous devez jouer la comtesse dans la configuration actuelle.");
             }
 
             //verifier la victoire

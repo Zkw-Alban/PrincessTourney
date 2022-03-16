@@ -2,6 +2,7 @@ body {
     background-image: url("/img/gameboard.jpg");
 }
 
+/*en fait il est en bas au final*/
 .bandeauHaut {
     position: absolute;
     background: #ffd800;
