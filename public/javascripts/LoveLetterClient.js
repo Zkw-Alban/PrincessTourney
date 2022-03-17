@@ -27,6 +27,7 @@ socket.on('loveLetterChat message', function (msg) {
     item.textContent = msg;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
+    $('#messages').animate({ scrollTop: $('#messages').prop("scrollHeight") }, 500);
 });
 
 socket.on('register', function (msg) {
@@ -37,8 +38,6 @@ socket.on('register', function (msg) {
         //si c'est un joueur entre J0 et J4 on fait tout apparaître
         if (msg[1] != 5) {
             $("#deckTable").addClass("hidden");
-            $("#chatDiv").removeClass("hidden");
-            $("#chatForm").removeClass("hidden");
             $("#piocheimg").removeClass("hidden");
             $("#newGame").removeClass("hidden");
         }
@@ -331,4 +330,6 @@ async function sendInfo() {
         })*/
 
     socket.emit('register', document.getElementById("loginName").value);
+    $("#chatDiv").removeClass("hidden");
+    $("#chatForm").removeClass("hidden");
 }

@@ -227,20 +227,24 @@ function getCardInHand(joueur) {
 
 function pioche(joueur) {
 //piocher = enlever la première carte du deck et l'assigner au joueur
-    //on vérifie que le joueur est vivant
-    if (joueur[1] == 1) {
-        //joueur[2] 0 = carte de gauche -- joueur[2] 1 = carte de droite
-        if (joueur[2][0] == NOCARD) {
-            //récupérer la carte correspondante
-            getCard(DECK[0][0], 0, joueur);
-            //enlever la carte piochée du deck
-            DECK.splice(0, 1);
-        } else if (joueur[2][1] == NOCARD) {
-            getCard(DECK[0][0], 1, joueur);
-            DECK.splice(0, 1);
+    //on vérifie que le deck contient des cartes
+    if (DECK.length > 0) {
+        //on vérifie que le joueur est vivant
+        if (joueur[1] == 1) {
+            //joueur[2] 0 = carte de gauche -- joueur[2] 1 = carte de droite
+            if (joueur[2][0] == NOCARD) {
+                //récupérer la carte correspondante
+                getCard(DECK[0][0], 0, joueur);
+                //enlever la carte piochée du deck
+                DECK.splice(0, 1);
+            } else if (joueur[2][1] == NOCARD) {
+                getCard(DECK[0][0], 1, joueur);
+                DECK.splice(0, 1);
+            }
         }
-    }
+    }    
     //mettre à jour le nombre de cartes dans le deck
+    io.emit('piocher', [DECK.length, [listeJoueurs, tourActuel]]);
     return DECK.length;
 }
 
@@ -405,7 +409,11 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
     } else if (carteJouee[0] == CHANCELIER[0]) {
         //le chancelier pioche et rejoue
         validerJouer(joueur, carteJouee, emplacement);
-        pioche(joueur);
+        if (DECK.length == 0) {
+            joueur[2][emplacement] = carteEnlevee;
+        } else {
+            pioche(joueur);
+        }          
 
     } else if (carteJouee[0] == ROI[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
@@ -597,7 +605,7 @@ io.on('connection', (socket) => {
 
     socket.on('piocher', (nomJoueur) => {
         pioche(getPlayerFromName(nomJoueur));
-        io.emit('piocher', [DECK.length, [listeJoueurs, tourActuel]]);
+        //io.emit('piocher', [DECK.length, [listeJoueurs, tourActuel]]);
     });
 
     socket.on('startNewGame', (nbjoueurs) => {
