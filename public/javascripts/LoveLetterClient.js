@@ -22,6 +22,7 @@ form.addEventListener('submit', function (e) {
 });
 
 socket.on('loveLetterChat message', function (msg) {
+    //ajout d'une ligne en bas du chat
     var item = document.createElement('li');
     item.textContent = msg;
     messages.appendChild(item);
@@ -33,6 +34,14 @@ socket.on('register', function (msg) {
     registered.textContent = msg[0];
     if (msg[2] == document.getElementById("loginName").value) {
         idJoueurClient = msg[1];
+        //si c'est un joueur entre J0 et J4 on fait tout apparaître
+        if (msg[1] != 5) {
+            $("#deckTable").addClass("hidden");
+            $("#chatDiv").removeClass("hidden");
+            $("#chatForm").removeClass("hidden");
+            $("#piocheimg").removeClass("hidden");
+            $("#newGame").removeClass("hidden");
+        }
     }
 });
 
@@ -192,34 +201,37 @@ function showCard(idCard, emplacement, joueur) {
         if (joueur[6] == 0) {
             $("#playerCardDesc" + emplacement).html("Joueur éliminé");
         }
-    } else if (idJoueurClient[0] == joueur[0]) {
-        for (var index = -1; index < CARDLIST.length; index++) {
-            if (idCard == index) {
-                //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
-                //à régler car actuellement tout le monde voit tout au même endroit
-                if (index == -1) {
-                    document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
+    } else {
+        $("#player" + joueur[6] + "Card" + emplacement).html("");
+        if (idJoueurClient[0] == joueur[0]) {
+            for (var index = -1; index < CARDLIST.length; index++) {
+                if (idCard == index) {
+                    //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
+                    //à régler car actuellement tout le monde voit tout au même endroit
+                    if (index == -1) {
+                        document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-                    if (joueur[6] == 0) {
-                        $("#player" + joueur[6] + "CardName" + emplacement).html(NOCARD[2]);
-                        $("#playerCardDesc" + emplacement).html(NOCARD[3]);
+                        if (joueur[6] == 0) {
+                            $("#player" + joueur[6] + "CardName" + emplacement).html(NOCARD[2]);
+                            $("#playerCardDesc" + emplacement).html(NOCARD[3]);
+                        } else {
+                            $("#player" + joueur[6] + "Card" + emplacement).html(NOCARD[2]);
+                        }
                     } else {
-                        $("#player" + joueur[6] + "Card" + emplacement).html(NOCARD[2]);
-                    }
-                } else {
-                    document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
+                        document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + CARDLIST[index][1] + "') no-repeat";
 
-                    if (joueur[6] == 0) {
-                        $("#player" + joueur[6] + "CardName" + emplacement).html("["+CARDLIST[index][0]+"] "+CARDLIST[index][2]);
-                        $("#playerCardDesc" + emplacement).html(CARDLIST[index][3]);
-                    } else {
-                        $("#player" + joueur[6] + "Card" + emplacement).html("[" + CARDLIST[index][0] + "] " + CARDLIST[index][2]);
+                        if (joueur[6] == 0) {
+                            $("#player" + joueur[6] + "CardName" + emplacement).html("[" + CARDLIST[index][0] + "] " + CARDLIST[index][2]);
+                            $("#playerCardDesc" + emplacement).html(CARDLIST[index][3]);
+                        } else {
+                            $("#player" + joueur[6] + "Card" + emplacement).html("[" + CARDLIST[index][0] + "] " + CARDLIST[index][2]);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
-    }    
+    }
 }
 
 //vérifie si on doit absolument jouer la comtesse et renvoie la position de la carte comtesse dans la main (donc de la carte à jouer)
@@ -236,7 +248,6 @@ function checkComtesse(joueur) {
 
 function displayPioche(deckLength) {
     //visuellement mettre à jour le nombre de cartes dans le deck
-    //document.getElementById("piocheNbCard").innerHTML = DECK.length;
     $("#piocheNbCard").html(deckLength);
 }
 
@@ -250,10 +261,10 @@ function piocher() {
 
 function jouer(emplacement) {
     //si le deck est vide on ne joue pas
-    if (deckLength === 0) {
+    /*if (deckLength === 0) {
         alert("deck vide, partie finie");
         return 99;
-    }
+    }*/
 
     //on vérifie que le joueur qui clique sur "jouer" est bien celui dont c'est le tour
     if (tourActuel[0] == idJoueurClient[0]) {
@@ -320,8 +331,4 @@ async function sendInfo() {
         })*/
 
     socket.emit('register', document.getElementById("loginName").value);
-
-    $("#deckTable").addClass("hidden");
-    $("#chatDiv").removeClass("hidden");
-    $("#chatForm").removeClass("hidden");
 }

@@ -4,14 +4,14 @@
 <head>
     <link rel="stylesheet" href="./stylesheets/loveLetter.css">
     <meta charset="utf-8">
-    <title>Love Letter</title>
+    <title>Princess Tourney</title>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.socket.io/4.4.1/socket.io.js"></script>    
 </head>
 
 <body>
-    <div id="joueursConnectes" class="bandeauHaut">
+    <div id="joueursConnectes" class="bandeauHaut hidden">
         qui est co ?
     </div>
     <div class="playerGrid">
@@ -89,9 +89,9 @@
     <img class="adv" id="adv2" src="./img/backCardJ2.png" style="position: absolute; top: 32vh; left: 142vh; width: 100px">
     <img class="adv" id="adv3" src="./img/backCardJ3.png" style="position: absolute; top: 54vh; left: 142vh; width: 100px">
     <img class="adv" id="adv4" src="./img/backCardJ4.png" style="position: absolute; top: 74vh; left: 142vh; width: 100px">
-    <img class="pioche" id="piocheimg" src="./img/pioche.png" onclick="piocher()">
+    <img class="pioche hidden" id="piocheimg" src="./img/pioche.png" onclick="piocher()">
     <p class="pioche" id="piocheNbCard">20</p>
-    <input class="playButton" id="newGame" type="button" value="Nouvelle partie" onclick="newGame(5)"
+    <input class="playButton hidden" id="newGame" type="button" value="Nouvelle partie" onclick="newGame(5)"
            style="position: absolute; top: 55vh; left: 105vh; width: 150px; cursor: pointer;">
     <div class="deck">
         <table class="decktable" id="deckTable">
