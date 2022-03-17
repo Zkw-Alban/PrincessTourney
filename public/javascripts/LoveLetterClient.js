@@ -36,10 +36,11 @@ socket.on('register', function (msg) {
     if (msg[2] == document.getElementById("loginName").value) {
         idJoueurClient = msg[1];
         //si c'est un joueur entre J0 et J4 on fait tout apparaître
-        if (msg[1] != 5) {
-            $("#deckTable").addClass("hidden");
+        if (msg[1] != 5) {            
             $("#piocheimg").removeClass("hidden");
-            $("#newGame").removeClass("hidden");
+            if (msg[1][0] == 0) {
+                $("#newGame").removeClass("hidden");
+            }            
         }
     }
 });
@@ -332,4 +333,5 @@ async function sendInfo() {
     socket.emit('register', document.getElementById("loginName").value);
     $("#chatDiv").removeClass("hidden");
     $("#chatForm").removeClass("hidden");
+    $("#deckTable").addClass("hidden");
 }
