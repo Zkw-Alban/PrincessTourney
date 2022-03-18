@@ -1,8 +1,13 @@
+[Aller au Manuel Utilisateur (Wiki)](https://github.com/Zkw-Alban/PrincessTourney/wiki/Manuel-utilisateur)
+
+[Aller au Guide de Maintenance (Wiki)](https://github.com/Zkw-Alban/PrincessTourney/wiki/Guide-de-maintenance)
+
+
 # Princess Tourney manuel utilisateur
 
 ## But du jeu
 
-5 vaillants joueurs veulent tous obtenir les faveurs de la Princesse organisé chaque année par son père le Roi. Parviendrez-vous à sortir du lot ?
+5 vaillants joueurs veulent tous obtenir les faveurs de la Princesse lors du Tournoi organisé chaque année par son père le Roi. Parviendrez-vous à sortir du lot ?
 
 Princess Tourney est un jeu de carte où chaque carte correspond à un rôle. Chaque joueur a une carte en main. À votre tour de jeu, vous allez piocher une carte et jouer l'une des deux dans votre main. Chaque carte a une force et des effets bien spécifiques.
 
