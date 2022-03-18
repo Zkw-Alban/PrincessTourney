@@ -33,24 +33,7 @@ app.post('/users', function (req, res) {
     res.send('POST request to the page + ' + req.body.name + ' ' + saveUserInscription(req.body.name));
 });
 
-//sauvegarde à la fin du fichier json contenant les utilisateurs
-function saveUserInscription(fileToSave) {
-    fs.readFile(path.join(__dirname, "public/docs/name.json"), function (err, data) {
-        var jsonObj = JSON.parse(data);
-        var keys = Object.keys(jsonObj.members);
-        //création d'un nouveau user
-        var i = keys.length + 1;
-        var newUser = "user" + i;
-        var newValue = fileToSave;
-        jsonObj.members[newUser] = newValue;
-        try {
-            fs.writeFileSync(path.join(__dirname, "public/docs/name.json"), JSON.stringify(jsonObj));
-            return newUser;
-        } catch (e) {
-            return "failed sign in";
-        }
-    })
-}
+
 
 //à la première connexion --> direction la page d'accueil
 app.get('/', (req, res) => {
@@ -299,15 +282,15 @@ function validerJouer(joueur, carteJouee, emplacement) {
 
 function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
     //application des effet des cartes, des ciblages, etc. /!\ on peut cibler les joueurs éliminés (permet de ne pas rester bloqué quand aucun joueur n'est ciblable)
-    io.emit('loveLetterChat message', "GAME INFO: Le joueur " + joueur[5] + " a joué " + carteJouee[2] + " en ciblant le joueur " + listeJoueurs[joueurCible][5] + "(J" + joueurCible + ") et le role " + roleCible);
+    io.emit('loveLetterChat message', "GAME INFO: Le joueur " + joueur[5] + " (J" + joueur[0] + ") a joué " + carteJouee[2] + " en ciblant le joueur " + listeJoueurs[joueurCible][5] + " (J" + joueurCible + ") et le role " + roleCible);
     if (carteJouee[0] == GARDE[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
             var roleReelJoueurCible = getCardInHand(listeJoueurs[joueurCible])[2].toLowerCase();
             if (roleReelJoueurCible == roleCible.toLowerCase()) {
                 //quand le joueur a été démasqué, on l'élimine (joueur[1] = 0) et on historise ses cartes en main pour qu'elle apparaisse dans l'historique
-                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
                 listeJoueurs[joueurCible][1] = 0;
                 listeJoueurs[joueurCible][4].push(getCardInHand(listeJoueurs[joueurCible])[2]);
                 listeJoueurs[joueurCible][3] = getCardInHand(listeJoueurs[joueurCible]);
@@ -326,7 +309,7 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
 
     } else if (carteJouee[0] == PRETRE[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
             validerJouer(joueur, carteJouee, emplacement);
             //le pretre indique la carte possédée par l'adversaire. format : [0] = id du joueur du pretre | [1] = message
@@ -342,7 +325,7 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
         }
     } else if (carteJouee[0] == BARON[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
             //on valide le fait de jouer avant d'appliquer les effets du baron
             validerJouer(joueur, carteJouee, emplacement);
@@ -354,12 +337,12 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
                 listeJoueurs[joueurCible][1] = 0;
                 listeJoueurs[joueurCible][4].push(getCardInHand(listeJoueurs[joueurCible])[2]);
                 listeJoueurs[joueurCible][3] = getCardInHand(listeJoueurs[joueurCible]);
-                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
             } else if (forceInitiateur < forceJoueurCible) {
                 listeJoueurs[joueur[0]][1] = 0;
                 listeJoueurs[joueur[0]][4].push(getCardInHand(listeJoueurs[joueur[0]])[2]);
                 listeJoueurs[joueur[0]][3] = getCardInHand(listeJoueurs[joueur[0]]);
-                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") a été éliminé");
             }
 
             //au final on passe au joueur suivant si il n'y a pas de conditions de victoires remplies
@@ -375,7 +358,7 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
 
     else if (carteJouee[0] == PRINCE[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
             validerJouer(joueur, carteJouee, emplacement);
             //on indique quelle carte a été défaussée
@@ -385,7 +368,7 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
             if (carteDefaussee == PRINCESSE) {
                 listeJoueurs[joueurCible][1] = 0;
                 listeJoueurs[joueurCible][3] = PRINCESSE;
-                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") a été éliminé car sa Princesse a été défaussée.");
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") a été éliminé car sa Princesse a été défaussée.");
             //sinon on vide sa main et on repioche une carte
             } else {
                 listeJoueurs[joueurCible][2][0] = NOCARD;
@@ -417,7 +400,7 @@ function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
 
     } else if (carteJouee[0] == ROI[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
-            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + "(J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
             validerJouer(joueur, carteJouee, emplacement);
             //on prend les cartes des deux joueurs
@@ -551,7 +534,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('register', (userName) => {
-        saveUserInscription(userName);
+        //saveUserInscription(userName);
         socket.id = userName;
         var idJoueurActuel = J0;
 
@@ -582,12 +565,12 @@ io.on('connection', (socket) => {
             idJoueurActuel = J4;
             io.emit("loveLetterChat message", "GAME INFO: Le joueur " + userName + " a pris la place de J4.");
         } else {
-            io.emit("loveLetterChat message", "GAME INFO : Le joueur " + userName + " ne pourra pas jouer cette partie car toutes les places sont prises.");
+            io.emit("loveLetterChat message", "GAME INFO: Le joueur " + userName + " ne pourra pas jouer cette partie car toutes les places sont prises.");
             //idJoueurActuel = 5 veut dire que ce n'est pas un joueur
             idJoueurActuel = 5;
         }
 
-        console.log("user saved in db with name " + socket.id);
+        console.log("user registered with name " + socket.id);
         var usersConnected = Array.from(io.sockets.sockets.values());
         var idUsersConnected = new Array(usersConnected.length);
         for (var i = 0; i < usersConnected.length; i++) {
@@ -600,7 +583,7 @@ io.on('connection', (socket) => {
         //jeu = [nomJoueur, carteJouee, emplacement, joueurCible, roleCible]
         jouer(getPlayerFromName(jeu[0]),jeu[1], jeu[2], jeu[3], jeu[4]);
         io.emit('jouer', [listeJoueurs, tourActuel]);
-        io.emit('loveLetterChat message', "C'est au joueur " + tourActuel[5] + " de jouer.");
+        io.emit('loveLetterChat message', "GAME INFO: C'est au joueur " + tourActuel[5] + " (J" + tourActuel[0] + ") de jouer.");
     });
 
     socket.on('piocher', (nomJoueur) => {
@@ -613,7 +596,7 @@ io.on('connection', (socket) => {
         NBJOUEURS = nbjoueurs;
         io.emit("startNewGame", [listeJoueurs, tourActuel]);
         io.emit('piocher', [DECK.length, listeJoueurs, tourActuel]);
-        io.emit("loveLetterChat message", "La partie commence, c'est au tour de " + tourActuel[5] + " de jouer.");
+        io.emit("loveLetterChat message", "GAME INFO: La partie commence, c'est au tour de " + tourActuel[5] + " (J" + tourActuel[0] + ") de jouer.");
     });
 
     socket.on('loveLetterChat message', (msg) => {

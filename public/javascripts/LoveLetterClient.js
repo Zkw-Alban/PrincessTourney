@@ -38,6 +38,7 @@ socket.on('register', function (msg) {
         //si c'est un joueur entre J0 et J4 on fait tout apparaître
         if (msg[1] != 5) {            
             $("#piocheimg").removeClass("hidden");
+            $("#piocheNbCard").removeClass("hidden");            
             if (msg[1][0] == 0) {
                 $("#newGame").removeClass("hidden");
             }            
@@ -195,9 +196,9 @@ function showCard(idCard, emplacement, joueur) {
     //affiche la carte du joueur à l'emplacement dans lequel elle se trouve
     //si le joueur est mort on affiche qu'il est mort
     if (joueur[1] == 0) {
-        document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
+        //document.getElementById("player" + joueur[0] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
 
-        $("#player" + joueur[6] + "Card" + emplacement).html("Joueur éliminé");
+        $("#player" + joueur[6] + "Card1").html("Joueur éliminé");
         if (joueur[6] == 0) {
             $("#playerCardDesc" + emplacement).html("Joueur éliminé");
         }
@@ -208,10 +209,9 @@ function showCard(idCard, emplacement, joueur) {
                 if (idCard == index) {
                     //affichage conditionnel selon si c'est le joueur principal ou un adversaire qui a la carte
                     //à régler car actuellement tout le monde voit tout au même endroit
-                    if (index == -1) {
-                        document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
-
+                    if (index == -1) {                  
                         if (joueur[6] == 0) {
+                            document.getElementById("player" + joueur[6] + "Card" + emplacement).style.background = "left / contain #FFFFFF url('" + NOCARD[1] + "') no-repeat";
                             $("#player" + joueur[6] + "CardName" + emplacement).html(NOCARD[2]);
                             $("#playerCardDesc" + emplacement).html(NOCARD[3]);
                         } else {
@@ -305,9 +305,6 @@ function jouer(emplacement) {
             } else {
                 alert("Vous devez jouer la comtesse dans la configuration actuelle.");
             }
-
-            //verifier la victoire
-            //hasWon(listeDesJoueurs);
         }
     }
 }
