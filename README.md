@@ -2,9 +2,9 @@
 
 [Aller au Guide de Maintenance (Wiki)](https://github.com/Zkw-Alban/PrincessTourney/wiki/Guide-de-maintenance)
 
-Pour lancer le serveur, taper "npm start app.js" dans la console. Nécessite NodeJS pour fonctionner. Dans le navigateur, se connecter au serveur sur le port 1337 (exemple : localhost:1337).
+Pour lancer le serveur, lancer "start_server.bat" ou taper "npm start app.js" dans la console. Nécessite NodeJS pour fonctionner. Dans le navigateur, se connecter au serveur sur le port 1337 (exemple : localhost:1337).
 
-To start the server and play the game, please type "npm start app.js" in the console. Requires NodeJS to work. In your web browser, connect to the serveur with port 1337 (example : localhost:1337).
+To start the server and play the game, please use "start_server.bat" or type "npm start app.js" in the console. Requires NodeJS to work. In your web browser, connect to the serveur with port 1337 (example : localhost:1337).
 
 # Princess Tourney manuel utilisateur
 
