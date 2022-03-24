@@ -2,6 +2,9 @@
 
 [Aller au Guide de Maintenance (Wiki)](https://github.com/Zkw-Alban/PrincessTourney/wiki/Guide-de-maintenance)
 
+Pour lancer le serveur, taper "npm start app.js" dans la console. Nécessite NodeJS pour fonctionner.
+
+To start the server and play the game, please type "npm start app.js" in the console. Requires NodeJS to work.
 
 # Princess Tourney manuel utilisateur
 
