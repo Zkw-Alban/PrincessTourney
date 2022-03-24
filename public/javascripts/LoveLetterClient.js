@@ -92,7 +92,7 @@ const COMTESSE = [8, "img/8Comtesse.jpg", "Comtesse", "Si vous possédez un Prin
 const PRINCESSE = [9, "img/9Princesse.jpg", "Princesse", "Si cette carte est jouée ou défaussée, son propriétaire est éliminé."]
 const CARDLIST = [ESPIONNE, GARDE, PRETRE, BARON, SERVANTE, PRINCE, CHANCELIER, ROI, COMTESSE, PRINCESSE]
 
-//dans la liste des joueurs : id joueur - statut (1 = en vie, 0 = mort) - main - dernière carte jouée - historique des cartes jouées - pseudo
+//dans la liste des joueurs : id joueur - statut (1 = en vie, 0 = mort) - main - dernière carte jouée - historique des cartes jouées - pseudo - emplacement sur le front
 let mainJoueur = [NOCARD, NOCARD];
 let mainADV1 = [NOCARD, NOCARD];
 let mainADV2 = [NOCARD, NOCARD];

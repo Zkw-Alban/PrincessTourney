@@ -283,7 +283,27 @@ function validerJouer(joueur, carteJouee, emplacement) {
 function jouer(joueur, carteJouee, emplacement, joueurCible, roleCible) {
     //application des effet des cartes, des ciblages, etc. /!\ on peut cibler les joueurs éliminés (permet de ne pas rester bloqué quand aucun joueur n'est ciblable)
     io.emit('loveLetterChat message', "GAME INFO: Le joueur " + joueur[5] + " (J" + joueur[0] + ") a joué " + carteJouee[2] + " en ciblant le joueur " + listeJoueurs[joueurCible][5] + " (J" + joueurCible + ") et le role " + roleCible);
-    if (carteJouee[0] == GARDE[0]) {
+    if (carteJouee[0] == ESPIONNE[0]) {
+        if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
+            io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
+        } else {
+            //valider l'action
+            validerJouer(joueur, carteJouee, emplacement);
+
+            //effets de l'espionne : interverti les cartes des adversaires de gauche et de droite?
+
+            //au final on passe au joueur suivant si il n'y a pas de conditions de victoires remplies
+            if (checkVictory() != 0) {
+                io.emit('loveLetterChat message', "GAME INFO: Le joueur " + winner + " a gagné la partie !");
+                //relancer une nouvelle partie
+                //newGame(5);
+            } else {
+                tourSuivant();
+            }
+        }
+    }
+
+    else if (carteJouee[0] == GARDE[0]) {
         if (listeJoueurs[joueurCible][3][0] == SERVANTE[0]) {
             io.emit('loveLetterChat message', "GAME INFO: Le joueur " + listeJoueurs[joueurCible][5] + " (J" + listeJoueurs[joueurCible][0] + ") ne peut pas être ciblé car protégé par la SERVANTE");
         } else {
